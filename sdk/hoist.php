@@ -29,8 +29,7 @@ class Hoist {
 		$op; /* output from the command */
 		$cmd = "nohup php ./sdk/poller.php " . $this->_api_key . '> /dev/null 2>&1 & echo $!';
 		
-        $commandId = exec($cmd, $op);
-		print($cmd);
+		$commandId = exec($cmd, $op);
 	
 		$this->_poller_process_id = (int)$op[0];
 		print($this->_poller_process_id);
