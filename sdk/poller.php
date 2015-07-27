@@ -52,8 +52,8 @@ class HoistPoller {
         
         /* Build the headers */
         $headers = array(
-        'Content-type: application/json',
-        'Authorization: Hoist ' . $apiKey
+            'Content-type: application/json',
+            'Authorization: Hoist ' . $apiKey
         );
         print_r($headers);
         
@@ -62,20 +62,20 @@ class HoistPoller {
         /* Build the query string */
         $data = array();
         if(isset($token)) {
-        $data['token'] = $token;
+            $data['token'] = $token;
         }
         if(isset($filterBy)) {
-        $data['filterBy'] = $filterBy;
+            $data['filterBy'] = $filterBy;
         }
         if(isset($filterValue)) {
-        $data['filterValue'] = $filterValue;
+            $data['filterValue'] = $filterValue;
         }
         if(isset($timeoutMs)) {
-        $data['timeoutMs'] = $timeoutMs;
+            $data['timeoutMs'] = $timeoutMs;
         }
         $querystring = http_build_query($data);
         if($querystring) {
-        $url = sprintf("%s?%s", $url, http_build_query($data));
+            $url = sprintf("%s?%s", $url, http_build_query($data));
         }
         
         curl_setopt($curl, CURLOPT_URL, $url);
