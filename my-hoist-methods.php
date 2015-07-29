@@ -3,7 +3,7 @@
 /**
    Copyright 2015 Hoist
    
-   
+   Sample Methods File
    
 */
 
@@ -13,13 +13,13 @@
 	
 	$log = function($event, $payload)
 	{
-	    print_r("Ping Event");
+		print_r("Ping Event");
 		print_r($payload);
 	};
 	
 	$new_invoice = function($event, $payload)
 	{
-	    print_r("New Invoice Event");
+		print_r("New Invoice Event");
 		print_r($payload);
 	};
 
