@@ -1,47 +1,62 @@
 <?php
-   
-function logger ($log) {
-    
-    file_put_contents('./log_'.date("j.n.Y").'.txt', $log.PHP_EOL, FILE_APPEND);
-    
-}
+ 
+require_once 'logger.php';
 
 class HoistPoller {
 
     private $_api_key;
     private $_last_token;
     private $_base_url = 'https://api.hoi.io/events';
-    private $_is_active = FALSE;
+    private $_watch_method_array;
 
     public function HoistPoller($key) {
 
-        //Load the API Key from api_key.txt
-        //$key = trim(file_get_contents("./api_key.txt", true));
-        
         $this->_api_key = $key;
         logger("Hoist Poller Constructed");
         logger("Key: ".$key);
     
     }
     
-    public function start() {
+    public function start($_watch_method_array) {
         
-        $_is_active = TRUE;
+        $this->_watch_method_array = $_watch_method_array;
         $this->loop();
         
-    }
+    } 
     
     public function loop() {
     
         //do the poll
-        $json = $this->poll($this->_api_key, $_last_token, NULL, NULL, 60000);
+        $json = $this->poll($this->_api_key, $this->_last_token, NULL, NULL, 60000);
         //print the result
-        print_r($json);
+        //print_r($json);
         //save the token
-        $_last_token = $json->token;
+        $this->_last_token = $json->token;
+        //process methods
+        $this->process_events($json->events);
         //run the loop
         $this->loop();   
     
+    }
+    
+    private function process_events($events) {
+     
+        //loop through events
+        foreach ($events as $event) {
+                        
+            if(isset($this->_watch_method_array[$event->eventName])) {
+            
+                $lambda = $this->_watch_method_array[$event->eventName];
+                if(isset($event->payload)) {
+                    $lambda($event, $event->payload);                    
+                } else {
+                    $lambda($event, new stdClass());
+                }
+                
+            }
+                        
+        }
+        
     }
     
     private function poll($apiKey = NULL, $token = NULL, $filterBy = NULL, $filterValue = NULL, $timeoutMs = NULL) {
@@ -55,7 +70,6 @@ class HoistPoller {
             'Content-type: application/json',
             'Authorization: Hoist ' . $apiKey
         );
-        print_r($headers);
         
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         
@@ -81,6 +95,8 @@ class HoistPoller {
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         
+        logger($url);
+        
         $result = curl_exec($curl);
         
         curl_close($curl);
@@ -93,16 +109,6 @@ class HoistPoller {
 
 
 }
-
-
-/** 
-
-Execution of the poller class.
-
-**/
-logger("Poller Launched");
-$hoistPoller = new HoistPoller($argv[1]);
-$hoistPoller->start();
 
 
 ?>
