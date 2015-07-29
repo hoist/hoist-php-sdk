@@ -23,8 +23,8 @@
 		print_r($payload);
 	};
 
-	$hoist->watch("ping", $log);
-	$hoist->watch("xero:invoice:new", $new_invoice);
+	$hoist->on("ping", $log);
+	$hoist->on("xero:invoice:new", $new_invoice);
 	
 	
 		

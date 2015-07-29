@@ -58,9 +58,15 @@ class Hoist {
 			
 	}
 	
-	public function watch($eventName = NULL, $method = NULL) {
+	public function on($eventName = NULL, $method = NULL) {
 
 		$this->watchMethods[$eventName] = $method;
+			
+	}
+	
+	public function raise($eventName = NULL, $payload) {
+
+		//
 			
 	}
 	
