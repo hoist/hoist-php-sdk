@@ -12,8 +12,7 @@ class HoistPoller {
     public function HoistPoller($key) {
 
         $this->_api_key = $key;
-        logger("Hoist Poller Constructed");
-        logger("Key: ".$key);
+        logger("Hoist Poller Constructed; Key: " . $key);
     
     }
     
@@ -28,8 +27,6 @@ class HoistPoller {
     
         //do the poll
         $json = $this->poll($this->_api_key, $this->_last_token, NULL, NULL, 60000);
-        //print the result
-        //print_r($json);
         //save the token
         $this->_last_token = $json->token;
         //process methods
@@ -48,13 +45,15 @@ class HoistPoller {
             
                 $lambda = $this->_watch_method_array[$event->eventName];
                 if(isset($event->payload)) {
-                    $lambda($event, $event->payload);                    
+                    $payload = $this->get_payload($event->payload);
+                    $event->payload = $payload;
+                    $lambda($event, $payload);
                 } else {
                     $lambda($event, new stdClass());
                 }
                 
             }
-                        
+
         }
         
     }
@@ -106,6 +105,36 @@ class HoistPoller {
         return json_decode($result);	 
     
     }
+
+    private function get_payload($payloadId) {
+        
+        $curl = curl_init();
+        
+        $url = "https://api.hoi.io/event/payload/".$payloadId;    
+        
+        /* Build the headers */
+        $headers = array(
+            'Content-type: application/json',
+            'Authorization: Hoist ' . $this->_api_key
+        );
+        
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        
+        logger($url);
+        
+        $result = curl_exec($curl);
+        
+        curl_close($curl);
+        
+        logger($result);
+        
+        return json_decode($result);     
+    
+    }
+
 
 
 }
