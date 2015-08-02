@@ -1,6 +1,9 @@
 # hoist-php-sdk
 PHP SDK for Hoist
 
+## API Key
+Save your API Key by itself in api_key.txt in the same folder you run the php command.
+
 ## Run as a background process
 ```bash
 nohup php ./sdk/launcher.php start ./my-hoist-methods.php > /dev/null 2>&1 & echo $!
